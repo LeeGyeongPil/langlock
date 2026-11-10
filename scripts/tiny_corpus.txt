@@ -1,0 +1,23 @@
+한국어로 답변해 주세요. 오늘은 한국어 문장을 쓰는 연습을 합니다.
+한국어 서비스에서는 답변에 한자가 섞이지 않아야 합니다.
+국어 시간에 한국어 문법을 배웠습니다. 어제는 한국과 일본의 역사를 읽었습니다.
+어떤 모델은 한국어 답변 중간에 漢字를 끼워 넣습니다. 漢字 漢字 漢文
+中文 中國 中文으로 답하지 말고 한국어로 답하세요.
+漢江은 서울을 지나는 강입니다. 한강 공원에서 산책을 했습니다.
+日本語 日本 日本人 そして こんにちは ありがとう さようなら
+The model answers in Korean when the prompt asks for Korean.
+Please answer in English. The quick brown fox jumps over the lazy dog.
+Serving a local model needs a tokenizer, a model file, and a small server.
+Logits are the raw scores a language model gives to every token before sampling.
+A byte level tokenizer can split one character into several byte tokens.
+Language models predict the next token from the tokens that came before.
+오늘 날씨가 좋아서 공원에서 산책을 했습니다. 내일도 날씨가 좋으면 좋겠습니다.
+저는 매일 아침 커피를 마시고 신문을 읽습니다. 한국 신문은 한국어로 쓰여 있습니다.
+질문에 대한 답변은 짧고 정확하게 한국어로 작성합니다.
+서버를 시작하려면 모델 파일을 먼저 내려받아야 합니다.
+토크나이저는 문장을 작은 조각으로 나누어 모델에 전달합니다.
+한국어 문장은 한국어 조각으로 나뉘고, 영어 문장은 영어 조각으로 나뉩니다.
+답변을 한국어로 쓰고 한국어 이외의 글자는 쓰지 않습니다.
+한 국 어 한 국 어 한국 한국어 국어 어휘 어려운 한자어
+한국어 한국어 한국어 한국어 한국어 한국어 한국어 한국어
+漢字 漢字 漢字 中文 中文 日本 日本 日本語 日本語

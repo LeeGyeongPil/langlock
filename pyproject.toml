@@ -1,0 +1,65 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "langlock"
+version = "0.1.0"
+description = "Keep stray Chinese characters out of Korean LLM output at decode time: a byte-aware script mask for byte-level BPE vocabularies."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11,<3.15"
+authors = [{ name = "LeeGyeongPil" }]
+keywords = ["llm", "logits", "logit-bias", "tokenizer", "bpe", "korean", "language-confusion", "transformers", "llama.cpp"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+# The core is pure standard library: tokenizer.json is read with `json`.
+dependencies = []
+
+[project.optional-dependencies]
+hf = ["torch>=2.6", "transformers>=5.0"]
+numpy = ["numpy>=1.26"]
+
+[project.urls]
+Homepage = "https://github.com/LeeGyeongPil/langlock"
+Issues = "https://github.com/LeeGyeongPil/langlock/issues"
+
+[project.scripts]
+langlock = "langlock.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+# Heavy packages used only by the adapter tests; pinned to the versions probed on 2026-11-10.
+ml = [
+    "torch==2.15.0",
+    "transformers==5.22.2",
+    "tokenizers==0.23.3",
+    "numpy==2.5.4; python_version >= '3.12'",
+    "numpy>=1.26; python_version < '3.12'",
+]
+
+[tool.uv]
+default-groups = ["dev", "ml"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/langlock"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "examples", "scripts", "README.md", "LICENSE", "CHANGELOG.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not real'"
+markers = [
+    "real: needs a real tokenizer.json / model (set LANGLOCK_TOKENIZER_JSON / LANGLOCK_MODEL_DIR); skipped by default",
+]
