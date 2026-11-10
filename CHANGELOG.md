@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-11
+
+### Changed
+- CI: run everything on Linux runners; the core job now covers Python 3.11-3.14 and also runs `langlock demo`.
+- Tests: make the random tiny-model generate test independent of the sampling path (`min_new_tokens`).
+
 ## [0.1.0] - 2026-11-10
 
 ### Added

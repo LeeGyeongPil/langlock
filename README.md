@@ -12,7 +12,7 @@
 
 ## 설치
 
-로컬 Python 3.11 ~ 3.14 가 필요합니다(이 레포의 시험은 3.12 에서만 실행해 봤습니다). 핵심은 **필수 의존성이 0개**입니다.
+로컬 Python 3.11 ~ 3.14 가 필요합니다(핵심 시험은 3.11~3.14 에서, torch 어댑터 시험은 3.12 에서 실행했고, CI 는 리눅스에서 돕니다). 핵심은 **필수 의존성이 0개**입니다.
 
 ```bash
 # 1) 핵심만 (표준 라이브러리만 사용: demo, scan, check, export, 마스크 API)
@@ -152,7 +152,7 @@ flowchart LR
 
 프리셋: `ko`(한자·가나 금지), `en`(한자·가나·한글·키릴 금지), `ru`(한자·가나·한글 금지).
 
-명령줄(`langlock --version` → `langlock 0.1.0`):
+명령줄(`langlock --version` → `langlock 0.1.1`):
 
 | 명령 | 하는 일 |
 |---|---|
@@ -327,7 +327,7 @@ policy = Policy.preset("ko", mode="soft", bias=-6.0, exempt_code_blocks=True, ex
 - **실제 모델 품질 측정은 하지 않았습니다.** `examples/real_hf_qwen.py` 는 직접 돌려 볼 수 있게 두었지만 이 레포에서 결과를 싣지 않습니다. 강하게 막으면 모델이 어색한 대체 토큰을 고를 수 있어 소프트 모드를 함께 제공합니다.
 - 빔 서치(`num_beams > 1`)는 보장 범위 밖입니다(행 순서가 바뀌어 상태를 다시 만듭니다).
 - 일본어 정책은 없습니다(한자와 일본어 한자를 구별하기 어렵습니다). 괄호 안 한자 병기 허용 정책도 아직 없습니다.
-- 실행한 Python 은 3.12 뿐입니다. 3.11·3.13·3.14 는 선언만 했고 이 환경에서 실행하지 않았습니다.
+- 핵심 시험은 Python 3.11·3.12·3.13·3.14 에서 실행했습니다(42 passed, 5 skipped). torch 어댑터 시험은 3.12 에서만 실행했습니다.
 
 ## 언제 쓰나
 
@@ -352,7 +352,7 @@ policy = Policy.preset("ko", mode="soft", bias=-6.0, exempt_code_blocks=True, ex
 
 ## 버전·호환성
 
-- 유의적 버전(SemVer)을 따릅니다. 0.x 동안은 마이너 버전에서 API 가 바뀔 수 있고, 바뀌면 [CHANGELOG.md](CHANGELOG.md)에 적습니다. 현재 0.1.0.
+- 유의적 버전(SemVer)을 따릅니다. 0.x 동안은 마이너 버전에서 API 가 바뀔 수 있고, 바뀌면 [CHANGELOG.md](CHANGELOG.md)에 적습니다. 현재 0.1.1.
 - Python `>=3.11,<3.15`. 필수 의존성 없음. 선택: `hf`(torch>=2.6, transformers>=5.0), `numpy`(numpy>=1.26).
 - 로드맵: M2 vLLM·mlx-lm 어댑터, M3 SentencePiece byte-fallback.
 
