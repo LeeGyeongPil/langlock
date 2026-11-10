@@ -1,4 +1,5 @@
 # Offline tests only: bundled tiny tokenizer, random-weight tiny model, no network, no real model.
+# Everything runs on Linux runners (macOS runners are billed at a higher rate on private repos).
 name: ci
 on:
   push:
@@ -6,25 +7,37 @@ on:
   schedule:
     - cron: "17 3 * * 1"   # weekly: catch breakage from new dependency releases
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   core:
-    # Pure standard-library core, no torch (adapter tests skip themselves).
+    # Pure standard-library core, no torch (adapter tests skip themselves), on every declared Python.
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: uv python install ${{ matrix.python-version }}
+      - run: uv sync --locked --no-group ml
+      # --no-sync: plain `uv run` would re-sync the default groups and pull torch back in.
+      - run: uv run --no-sync pytest -q
+      - run: uv run --no-sync langlock demo
+  full:
+    # Adapter tests with the locked torch/transformers (PyPI wheels; the tests use the CPU only).
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: astral-sh/setup-uv@v10.3.3
-      - run: uv python install
-      - run: uv sync --locked --no-group ml
-      # --no-sync: plain `uv run` would re-sync the default groups and pull torch back in.
-      - run: uv run --no-sync pytest -q
-  full:
-    # macOS wheels of torch are CPU-only and small, so the adapter tests run here.
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v7.0.1
-      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          # torch wheels are a few GB on Linux; caching them would fill the repository cache.
+          enable-cache: false
       - run: uv python install
       - run: uv sync --locked
-      - run: uv run pytest -q
-      - run: uv run langlock demo
-      - run: uv run python examples/tiny_generate.py
+      - run: uv run --no-sync pytest -q
+      - run: uv run --no-sync langlock demo
+      - run: uv run --no-sync python examples/tiny_generate.py

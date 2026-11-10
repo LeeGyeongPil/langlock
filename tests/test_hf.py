@@ -42,13 +42,16 @@ def prompt(vocab):
     return torch.tensor([ids])
 
 
-def generate(model, vocab, processors, seed):
+def generate(model, vocab, processors, seed, min_new_tokens=0):
     torch.manual_seed(seed)
     ids = prompt(vocab)
     out = model.generate(
         input_ids=ids,
         attention_mask=torch.ones_like(ids),
         max_new_tokens=200,
+        # min_new_tokens keeps EOS closed, so the run length does not depend on which path
+        # the sampler happens to take (CPU float differences change the path between machines).
+        min_new_tokens=min_new_tokens,
         do_sample=True,
         top_k=0,
         temperature=1.0,
@@ -62,8 +65,8 @@ def generate(model, vocab, processors, seed):
 def test_generate_random_tiny_qwen2(vocab):
     for seed in range(5):
         model = tiny_model(vocab, seed)
-        new_ids = generate(model, vocab, [LanglockLogitsProcessor(vocab, "ko")], seed)
-        assert len(new_ids) > 10
+        new_ids = generate(model, vocab, [LanglockLogitsProcessor(vocab, "ko")], seed, min_new_tokens=200)
+        assert len(new_ids) == 200
         text = decode_complete(vocab, new_ids)
         assert not any(script_of(ord(ch)) in ("Han", "Kana") for ch in text), (seed, text)
         assert "�" not in text, (seed, text)
