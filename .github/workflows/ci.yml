@@ -1,0 +1,30 @@
+# Offline tests only: bundled tiny tokenizer, random-weight tiny model, no network, no real model.
+name: ci
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "17 3 * * 1"   # weekly: catch breakage from new dependency releases
+  workflow_dispatch:
+jobs:
+  core:
+    # Pure standard-library core, no torch (adapter tests skip themselves).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.3.3
+      - run: uv python install
+      - run: uv sync --locked --no-group ml
+      # --no-sync: plain `uv run` would re-sync the default groups and pull torch back in.
+      - run: uv run --no-sync pytest -q
+  full:
+    # macOS wheels of torch are CPU-only and small, so the adapter tests run here.
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.3.3
+      - run: uv python install
+      - run: uv sync --locked
+      - run: uv run pytest -q
+      - run: uv run langlock demo
+      - run: uv run python examples/tiny_generate.py
