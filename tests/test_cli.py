@@ -94,8 +94,8 @@ def _byte_to_unicode() -> dict[int, str]:
     return dict(zip(bs, map(chr, cs)))
 
 
-def _big_tokenizer(tmp_path: Path, extra: int = 8000) -> Path:
-    """Bundled tiny tokenizer plus many Han tokens, so the export output exceeds a 64 KiB pipe."""
+def _big_tokenizer(tmp_path: Path, extra: int = 20000) -> Path:
+    """Bundled tiny tokenizer plus many Han tokens (~300 KB of output, well past any pipe buffer; 8000 tokens was not enough on Python 3.14)."""
     data = json.loads(TINY.read_text(encoding="utf-8"))
     vocab = data["model"]["vocab"]
     table = _byte_to_unicode()
