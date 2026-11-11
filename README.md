@@ -152,7 +152,7 @@ flowchart LR
 
 프리셋: `ko`(한자·가나 금지), `en`(한자·가나·한글·키릴 금지), `ru`(한자·가나·한글 금지).
 
-명령줄(`langlock --version` → `langlock 0.1.2`):
+명령줄(`langlock --version` → `langlock 0.1.3`):
 
 | 명령 | 하는 일 |
 |---|---|
@@ -353,7 +353,7 @@ policy = Policy.preset("ko", mode="soft", bias=-6.0, exempt_code_blocks=True, ex
 
 ## 버전·호환성
 
-- 유의적 버전(SemVer)을 따릅니다. 0.x 동안은 마이너 버전에서 API 가 바뀔 수 있고, 바뀌면 [CHANGELOG.md](CHANGELOG.md)에 적습니다. 현재 0.1.2.
+- 유의적 버전(SemVer)을 따릅니다. 0.x 동안은 마이너 버전에서 API 가 바뀔 수 있고, 바뀌면 [CHANGELOG.md](CHANGELOG.md)에 적습니다. 현재 0.1.3.
 - Python `>=3.11,<3.15`. 필수 의존성 없음. 선택: `hf`(torch>=2.6, transformers>=5.0), `numpy`(numpy>=1.26).
 - 로드맵: M2 vLLM·mlx-lm 어댑터, M3 SentencePiece byte-fallback.
 

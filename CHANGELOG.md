@@ -6,6 +6,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-11-11
+
+### Fixed
+- CI: the early-closed-pipe regression test is deterministic under Python 3.14 buffering (larger fixture output; no application change).
+
 ## [0.1.2] - 2026-11-11
 
 ### Fixed

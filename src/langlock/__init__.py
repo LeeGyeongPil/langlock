@@ -14,7 +14,7 @@ from .mask import Decision, RowState, ScriptMask
 from .policy import Policy
 from .vocab import ScanStats, VocabIndex, load_vocab
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 __all__ = [
     "Decision",
