@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "langlock"
-version = "0.1.1"
+version = "0.1.2"
 description = "Keep stray Chinese characters out of Korean LLM output at decode time: a byte-aware script mask for byte-level BPE vocabularies."
 readme = "README.md"
 license = "MIT"
