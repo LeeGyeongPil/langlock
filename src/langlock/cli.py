@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from collections.abc import Sequence
 
@@ -146,17 +147,31 @@ def _cmd_export(args: argparse.Namespace) -> int:
     return 0
 
 
+EXIT_BROKEN_PIPE = 141
+
+
+def _dispatch(args: argparse.Namespace) -> int:
+    if args.command == "demo":
+        return _cmd_demo()
+    if args.command == "scan":
+        return _cmd_scan(args)
+    if args.command == "check":
+        return _cmd_check(args)
+    return _cmd_export(args)
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     """Entry point; returns the process exit code."""
     args = _build_parser().parse_args(argv)
     try:
-        if args.command == "demo":
-            return _cmd_demo()
-        if args.command == "scan":
-            return _cmd_scan(args)
-        if args.command == "check":
-            return _cmd_check(args)
-        return _cmd_export(args)
+        code = _dispatch(args)
+        sys.stdout.flush()  # surface a closed pipe here, not at interpreter shutdown
+        return code
+    except BrokenPipeError:
+        # The reader (e.g. `head`) went away. Point stdout at devnull so the final flush at
+        # exit cannot fail, and report 141 (128 + SIGPIPE) like other Unix tools.
+        os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
+        return EXIT_BROKEN_PIPE
     except LanglockError as exc:
         print(f"langlock: error: {exc}", file=sys.stderr)
         return 2

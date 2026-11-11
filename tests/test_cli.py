@@ -68,3 +68,96 @@ def test_out_of_range_openai_bias_is_one_line_error(fixture_path, capsys):
     assert code == 2
     assert err.startswith("langlock: error:")
     assert "-100" in err and "Traceback" not in err
+
+
+# --- early-closed stdout pipe (e.g. `langlock export ... | head`) -----------------------------
+import os  # noqa: E402
+import subprocess  # noqa: E402
+import sys  # noqa: E402
+
+import pytest  # noqa: E402
+
+TINY = Path(__file__).resolve().parents[1] / "src" / "langlock" / "_data" / "tiny_bytebpe.json"
+posix_only = pytest.mark.skipif(os.name != "posix", reason="pipe semantics checked on POSIX only")
+
+
+def _byte_to_unicode() -> dict[int, str]:
+    # GPT-2 byte -> printable unicode table, used to spell CJK tokens in a byte-level vocab.
+    bs = list(range(33, 127)) + list(range(161, 173)) + list(range(174, 256))
+    cs = bs[:]
+    n = 0
+    for b in range(256):
+        if b not in bs:
+            bs.append(b)
+            cs.append(256 + n)
+            n += 1
+    return dict(zip(bs, map(chr, cs)))
+
+
+def _big_tokenizer(tmp_path: Path, extra: int = 8000) -> Path:
+    """Bundled tiny tokenizer plus many Han tokens, so the export output exceeds a 64 KiB pipe."""
+    data = json.loads(TINY.read_text(encoding="utf-8"))
+    vocab = data["model"]["vocab"]
+    table = _byte_to_unicode()
+    next_id = max(vocab.values()) + 1
+    for cp in range(0x4E00, 0x4E00 + extra):
+        vocab["".join(table[b] for b in chr(cp).encode("utf-8"))] = next_id
+        next_id += 1
+    path = tmp_path / "big_tokenizer.json"
+    path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    return path
+
+
+def _run_langlock(args: list[str], read_bytes: int | None):
+    """Start the CLI, read `read_bytes` (None = all), close stdout, and always reap the process."""
+    proc = subprocess.Popen(
+        [sys.executable, "-m", "langlock.cli", *args],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    try:
+        assert proc.stdout is not None and proc.stderr is not None
+        if read_bytes is None:
+            out = proc.stdout.read()
+        else:
+            out = proc.stdout.read(read_bytes)
+        proc.stdout.close()  # reader goes away early -> writer gets EPIPE
+        err = proc.stderr.read().decode("utf-8", "replace")
+        code = proc.wait(timeout=60)
+        return code, out, err
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+        proc.wait()
+        if proc.stderr:
+            proc.stderr.close()
+
+
+@posix_only
+def test_export_closed_pipe_is_quiet(tmp_path):
+    tok = _big_tokenizer(tmp_path)
+    code, out, err = _run_langlock(["export", str(tok), "--format", "logit-bias"], 50)
+    assert len(out) == 50
+    assert "Traceback" not in err and "BrokenPipeError" not in err and "Exception ignored" not in err
+    assert err == ""
+    assert code == 141
+
+
+@posix_only
+def test_check_closed_pipe_is_quiet(tmp_path):
+    text = tmp_path / "big.txt"
+    text.write_text("漢字가 섞인 문장 漢字\n" * 20000, encoding="utf-8")
+    code, out, err = _run_langlock(["check", str(text)], 50)
+    assert len(out) == 50
+    assert "Traceback" not in err and "BrokenPipeError" not in err and "Exception ignored" not in err
+    assert err == ""
+    assert code == 141
+
+
+@posix_only
+def test_export_full_read_is_unchanged(tmp_path):
+    tok = _big_tokenizer(tmp_path)
+    code, out, err = _run_langlock(["export", str(tok), "--format", "logit-bias"], None)
+    assert code == 0 and err == ""
+    assert len(out) > 65536
+    assert isinstance(json.loads(out), list)
