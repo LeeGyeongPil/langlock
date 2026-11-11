@@ -36,7 +36,7 @@ uv sync            # 시험용 torch·transformers·numpy 까지 설치 (맥·�
 
 # 또는 가볍게 (torch 없이 핵심 기능과 핵심 시험만):
 uv sync --no-group ml
-uv run --no-sync pytest -q       # 42 passed, 5 skipped, 2 deselected
+uv run --no-sync pytest -q       # 45 passed, 5 skipped, 2 deselected
 uv run --no-sync langlock demo
 ```
 
@@ -152,7 +152,7 @@ flowchart LR
 
 프리셋: `ko`(한자·가나 금지), `en`(한자·가나·한글·키릴 금지), `ru`(한자·가나·한글 금지).
 
-명령줄(`langlock --version` → `langlock 0.1.1`):
+명령줄(`langlock --version` → `langlock 0.1.2`):
 
 | 명령 | 하는 일 |
 |---|---|
@@ -327,7 +327,7 @@ policy = Policy.preset("ko", mode="soft", bias=-6.0, exempt_code_blocks=True, ex
 - **실제 모델 품질 측정은 하지 않았습니다.** `examples/real_hf_qwen.py` 는 직접 돌려 볼 수 있게 두었지만 이 레포에서 결과를 싣지 않습니다. 강하게 막으면 모델이 어색한 대체 토큰을 고를 수 있어 소프트 모드를 함께 제공합니다.
 - 빔 서치(`num_beams > 1`)는 보장 범위 밖입니다(행 순서가 바뀌어 상태를 다시 만듭니다).
 - 일본어 정책은 없습니다(한자와 일본어 한자를 구별하기 어렵습니다). 괄호 안 한자 병기 허용 정책도 아직 없습니다.
-- 핵심 시험은 Python 3.11·3.12·3.13·3.14 에서 실행했습니다(42 passed, 5 skipped). torch 어댑터 시험은 3.12 에서만 실행했습니다.
+- 핵심 시험은 Python 3.11·3.12·3.13·3.14 에서 실행했습니다(45 passed, 5 skipped). torch 어댑터 시험은 3.12 에서만 실행했습니다.
 
 ## 언제 쓰나
 
@@ -344,6 +344,7 @@ policy = Policy.preset("ko", mode="soft", bias=-6.0, exempt_code_blocks=True, ex
 | `pip install langlock` 이 "No matching distribution" | PyPI 에 아직 올리지 않음 | 위 설치 절의 `git+https` 명령 사용 |
 | 맥 터미널에서 `demo` 표의 열이 어긋남 | 한자·한글 문자 폭이 터미널마다 다름 | 내용은 같음. 표 값만 확인 |
 | `check` 가 종료코드 1 | 금지 글자를 찾았다는 뜻(오류가 아님) | 시연·보고용이면 `--exit-zero` |
+| 출력이 긴 명령을 `\| head` 나 `\| head -c 100` 으로 일찍 닫으면 종료코드 141 (예: `langlock check 큰파일.txt \| head -n 1`) | 출력을 받는 쪽이 먼저 닫혀 조용히 끝난 것(128 + SIGPIPE). 오류 메시지는 없음. 파이프 끝의 `echo $?` 는 `head` 의 0 이므로 bash 는 `${PIPESTATUS[0]}`, 또는 `set -o pipefail` 뒤 `$?` 로 확인(zsh 는 `$pipestatus[1]`). `export` 의 logit-bias 출력은 한 줄이라 `\| head` 만으로는 안 닫히고 `head -c N` 이어야 함 | 정상 동작. 전체 출력이 필요하면 파일로 저장 |
 | `langlock: error: OpenAI logit_bias values must be between -100 and 100, got -200.0` (종료코드 2) | `export --format openai-bias --mode soft` 에서 `--bias` 가 범위 밖(예: -200) | -100~100 사이 값. (`--mode` 없이 내보내면 기본값 -100) |
 | `uv sync --no-group ml` 뒤 `uv run …` 이 torch 를 설치함 | `uv run` 이 기본 그룹(ml)을 다시 동기화 | `uv run --no-sync …` |
 | 두 줄 경고 `Redirects are currently not supported in MacOs` | 맥에서 torch 가 내는 안내 | 무시해도 됨 |
@@ -352,7 +353,7 @@ policy = Policy.preset("ko", mode="soft", bias=-6.0, exempt_code_blocks=True, ex
 
 ## 버전·호환성
 
-- 유의적 버전(SemVer)을 따릅니다. 0.x 동안은 마이너 버전에서 API 가 바뀔 수 있고, 바뀌면 [CHANGELOG.md](CHANGELOG.md)에 적습니다. 현재 0.1.1.
+- 유의적 버전(SemVer)을 따릅니다. 0.x 동안은 마이너 버전에서 API 가 바뀔 수 있고, 바뀌면 [CHANGELOG.md](CHANGELOG.md)에 적습니다. 현재 0.1.2.
 - Python `>=3.11,<3.15`. 필수 의존성 없음. 선택: `hf`(torch>=2.6, transformers>=5.0), `numpy`(numpy>=1.26).
 - 로드맵: M2 vLLM·mlx-lm 어댑터, M3 SentencePiece byte-fallback.
 
@@ -360,7 +361,7 @@ policy = Policy.preset("ko", mode="soft", bias=-6.0, exempt_code_blocks=True, ex
 
 ```bash
 uv sync
-uv run pytest -q                      # 오프라인 시험 (53 passed, 실제 토크나이저·모델 시험 2개는 기본 제외)
+uv run pytest -q                      # 오프라인 시험 (56 passed, 실제 토크나이저·모델 시험 2개는 기본 제외)
 uv run python scripts/make_tiny_tokenizer.py   # 동봉 토크나이저 재생성 (필요할 때만)
 ```
 
