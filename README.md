@@ -1,5 +1,7 @@
 # langlock
 
+**한국어** | [English](README.en.md)
+
 > **English summary** — langlock is a small Python library that keeps stray Chinese characters (or any other writing system you choose) out of LLM output *while the model is decoding*. It understands byte-level BPE vocabularies, so a half-written UTF-8 character is blocked only when it would finish as a banned script, and rare Hangul such as `뷁` survives. It has zero required dependencies and ships a Hugging Face `LogitsProcessor`, a llama-cpp-python processor, and exporters for llama.cpp `logit_bias`, GBNF and regex. Install from GitHub: `pip install "langlock[hf,numpy] @ git+https://github.com/LeeGyeongPil/langlock"` (a PyPI release is planned, not published yet). Limits: byte-level BPE tokenizers only (Qwen/DeepSeek style), Ollama is not supported, vLLM and mlx-lm adapters are planned (M2), SentencePiece byte-fallback is planned (M3).
 
 한국어로 답하라고 했는데 중간에 `漢字` 나 중국어 문장이 끼어드는 일을, **모델이 글자를 고르는 그 순간**에 막아 주는 라이브러리입니다. 후처리로 한자를 지우거나 다시 생성하는 일을 줄여 줍니다.
