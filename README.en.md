@@ -150,7 +150,7 @@ The public API is imported from `langlock` (adapters and exporters live in submo
 
 Presets: `ko` (bans Han and Kana), `en` (bans Han, Kana, Hangul and Cyrillic), `ru` (bans Han, Kana and Hangul).
 
-Command line (`langlock --version` → `langlock 0.1.3`):
+Command line (`langlock --version` → `langlock 0.1.4`):
 
 | Command | What it does |
 |---|---|
@@ -353,7 +353,7 @@ Code blocks (inside \`\`\`) and `<think>…</think>` ranges are left alone, and 
 
 ## Versioning and compatibility
 
-- Follows Semantic Versioning (SemVer). During 0.x the API may change in minor versions, and changes are recorded in [CHANGELOG.md](CHANGELOG.md). Currently 0.1.3.
+- Follows Semantic Versioning (SemVer). During 0.x the API may change in minor versions, and changes are recorded in [CHANGELOG.md](CHANGELOG.md). Currently 0.1.4.
 - Python `>=3.11,<3.15`. No required dependencies. Optional: `hf` (torch>=2.6, transformers>=5.0), `numpy` (numpy>=1.26).
 - Roadmap: M2 vLLM and mlx-lm adapters, M3 SentencePiece byte-fallback.
 

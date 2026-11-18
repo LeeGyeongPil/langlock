@@ -6,6 +6,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-11-19
+
+### Fixed
+- Han script table now matches Unicode `Scripts.txt` (Scripts-18.0.0): U+3005 (々), U+3007 (〇), Hangzhou numerals, U+16FE2 and later Han signs, Extension I and J are no longer classified as Common, so `ko` policies ban them.
+
 ## [0.1.3] - 2026-11-11
 
 ### Fixed
