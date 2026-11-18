@@ -38,7 +38,7 @@ uv sync            # 시험용 torch·transformers·numpy 까지 설치 (맥·�
 
 # 또는 가볍게 (torch 없이 핵심 기능과 핵심 시험만):
 uv sync --no-group ml
-uv run --no-sync pytest -q       # 45 passed, 5 skipped, 2 deselected
+uv run --no-sync pytest -q       # 핵심 시험만 실행 (torch 시험은 건너뜀)
 uv run --no-sync langlock demo
 ```
 
@@ -254,7 +254,7 @@ dynamic candidates: 109 (continuation-byte tokens checked at run time)
 ```text
 vocab: 151665 tokens (22 special)
 tokens containing a complete character of:
-  Han: 26097
+  Han: 26097   # v0.1.3 기준 값(Han 범위 수정 전). 수정 후에는 약간 달라질 수 있습니다
   Hangul: 3577
   Kana: 2142
   ...
@@ -277,12 +277,12 @@ uv run langlock export --policy ko --format gbnf > ko.gbnf
 ```text
 # langlock: no Han, Kana characters
 root ::= char*
-char ::= [^\u2E80-\u2FDF\u3041-\u3096\u309D-\u309F\u30A1-\u30FA\u30FD-\u30FF\u31F0-\u31FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF66-\uFF9F\U0001B000-\U0001B16F\U00020000-\U0002A6DF\U0002A700-\U0002EBEF\U0002F800-\U0002FA1F\U00030000-\U000323AF]
+char ::= [^\u2E80-\u2FDF\u3005\u3007\u3021-\u3029\u3038-\u303B\u3041-\u3096\u309D-\u309F\u30A1-\u30FA\u30FD-\u30FF\u31F0-\u31FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF66-\uFF9F\U00016FE2-\U00016FE3\U00016FF0-\U00016FF6\U0001B000-\U0001B16F\U00020000-\U0002A6DF\U0002A700-\U0002EE5D\U0002F800-\U0002FA1F\U00030000-\U00033479]
 ```
 
 ![gbnf 내보내기 화면](docs/images/05-export-gbnf.png)
 
-*그림 4. `export --format gbnf` (긴 줄은 화면 폭에 맞춰 잘렸습니다).*
+*그림 4. `export --format gbnf` (긴 줄은 줄바꿈되어 전체가 표시됩니다).*
 
 요청 예시(llama.cpp 서버의 `/completion` 에 `logit_bias` 를 넣는 형태, **실제 서버로 확인하지 않았습니다**):
 
@@ -329,7 +329,7 @@ policy = Policy.preset("ko", mode="soft", bias=-6.0, exempt_code_blocks=True, ex
 - **실제 모델 품질 측정은 하지 않았습니다.** `examples/real_hf_qwen.py` 는 직접 돌려 볼 수 있게 두었지만 이 레포에서 결과를 싣지 않습니다. 강하게 막으면 모델이 어색한 대체 토큰을 고를 수 있어 소프트 모드를 함께 제공합니다.
 - 빔 서치(`num_beams > 1`)는 보장 범위 밖입니다(행 순서가 바뀌어 상태를 다시 만듭니다).
 - 일본어 정책은 없습니다(한자와 일본어 한자를 구별하기 어렵습니다). 괄호 안 한자 병기 허용 정책도 아직 없습니다.
-- 핵심 시험은 Python 3.11·3.12·3.13·3.14 에서 실행했습니다(45 passed, 5 skipped). torch 어댑터 시험은 3.12 에서만 실행했습니다.
+- 핵심 시험은 Python 3.11·3.12·3.13·3.14 에서 실행했습니다(통과, torch 시험은 건너뜀). torch 어댑터 시험은 3.12 에서만 실행했습니다.
 
 ## 언제 쓰나
 
@@ -363,7 +363,7 @@ policy = Policy.preset("ko", mode="soft", bias=-6.0, exempt_code_blocks=True, ex
 
 ```bash
 uv sync
-uv run pytest -q                      # 오프라인 시험 (56 passed, 실제 토크나이저·모델 시험 2개는 기본 제외)
+uv run pytest -q                      # 오프라인 시험 (실제 토크나이저·모델 시험 2개는 기본 제외)
 uv run python scripts/make_tiny_tokenizer.py   # 동봉 토크나이저 재생성 (필요할 때만)
 ```
 

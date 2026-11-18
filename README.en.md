@@ -34,7 +34,7 @@ uv sync            # also installs torch, transformers, numpy for the tests (lar
 
 # or the light way (core features and core tests only, no torch):
 uv sync --no-group ml
-uv run --no-sync pytest -q       # 45 passed, 5 skipped, 2 deselected
+uv run --no-sync pytest -q       # core tests only (torch tests are skipped)
 uv run --no-sync langlock demo
 ```
 
@@ -252,7 +252,7 @@ The same command on the real Qwen2.5-0.5B-Instruct `tokenizer.json` (1.1 seconds
 ```text
 vocab: 151665 tokens (22 special)
 tokens containing a complete character of:
-  Han: 26097
+  Han: 26097   # measured with v0.1.3, before the Han range fix; may differ slightly now
   Hangul: 3577
   Kana: 2142
   ...
@@ -275,12 +275,12 @@ uv run langlock export --policy ko --format gbnf > ko.gbnf
 ```text
 # langlock: no Han, Kana characters
 root ::= char*
-char ::= [^\u2E80-\u2FDF\u3041-\u3096\u309D-\u309F\u30A1-\u30FA\u30FD-\u30FF\u31F0-\u31FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF66-\uFF9F\U0001B000-\U0001B16F\U00020000-\U0002A6DF\U0002A700-\U0002EBEF\U0002F800-\U0002FA1F\U00030000-\U000323AF]
+char ::= [^\u2E80-\u2FDF\u3005\u3007\u3021-\u3029\u3038-\u303B\u3041-\u3096\u309D-\u309F\u30A1-\u30FA\u30FD-\u30FF\u31F0-\u31FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF66-\uFF9F\U00016FE2-\U00016FE3\U00016FF0-\U00016FF6\U0001B000-\U0001B16F\U00020000-\U0002A6DF\U0002A700-\U0002EE5D\U0002F800-\U0002FA1F\U00030000-\U00033479]
 ```
 
 ![gbnf export screen](docs/images/05-export-gbnf.png)
 
-*Figure 4. `export --format gbnf` (the long line is cut to fit the screen width).*
+*Figure 4. `export --format gbnf` (the long line wraps, so the whole line is visible).*
 
 Request example (the shape of putting `logit_bias` into the llama.cpp server's `/completion`, **not verified against a real server**):
 
@@ -327,7 +327,7 @@ Code blocks (inside \`\`\`) and `<think>…</think>` ranges are left alone, and 
 - **Real model quality was not measured.** `examples/real_hf_qwen.py` is provided so you can run it yourself, but this repo does not publish its results. Blocking hard can make the model pick awkward substitute tokens, which is why soft mode is also provided.
 - Beam search (`num_beams > 1`) is outside the guaranteed scope (row order changes and the state is rebuilt).
 - There is no Japanese policy (Han characters and Japanese kanji are hard to tell apart). There is also no policy yet that allows Han characters written in parentheses next to Korean words.
-- The core tests were run on Python 3.11, 3.12, 3.13 and 3.14 (45 passed, 5 skipped). The torch adapter tests were run only on 3.12.
+- The core tests were run on Python 3.11, 3.12, 3.13 and 3.14 (passed; torch tests skipped). The torch adapter tests were run only on 3.12.
 
 ## When to use it
 
@@ -361,7 +361,7 @@ Code blocks (inside \`\`\`) and `<think>…</think>` ranges are left alone, and 
 
 ```bash
 uv sync
-uv run pytest -q                      # offline tests (56 passed; the 2 real tokenizer/model tests are excluded by default)
+uv run pytest -q                      # offline tests (the 2 real tokenizer/model tests are excluded by default)
 uv run python scripts/make_tiny_tokenizer.py   # regenerate the bundled tokenizer (only when needed)
 ```
 
