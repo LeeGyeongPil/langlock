@@ -10,9 +10,11 @@ from langlock.vocab import CONTINUATION
 GBNF_KO = (
     "# langlock: no Han, Kana characters\n"
     "root ::= char*\n"
-    "char ::= [^\\u2E80-\\u2FDF\\u3041-\\u3096\\u309D-\\u309F\\u30A1-\\u30FA\\u30FD-\\u30FF\\u31F0-\\u31FF"
-    "\\u3400-\\u4DBF\\u4E00-\\u9FFF\\uF900-\\uFAFF\\uFF66-\\uFF9F\\U0001B000-\\U0001B16F"
-    "\\U00020000-\\U0002A6DF\\U0002A700-\\U0002EBEF\\U0002F800-\\U0002FA1F\\U00030000-\\U000323AF]\n"
+    "char ::= [^\\u2E80-\\u2FDF\\u3005\\u3007\\u3021-\\u3029\\u3038-\\u303B\\u3041-\\u3096\\u309D-\\u309F"
+    "\\u30A1-\\u30FA\\u30FD-\\u30FF\\u31F0-\\u31FF"
+    "\\u3400-\\u4DBF\\u4E00-\\u9FFF\\uF900-\\uFAFF\\uFF66-\\uFF9F\\U00016FE2-\\U00016FE3"
+    "\\U00016FF0-\\U00016FF6\\U0001B000-\\U0001B16F"
+    "\\U00020000-\\U0002A6DF\\U0002A700-\\U0002EE5D\\U0002F800-\\U0002FA1F\\U00030000-\\U00033479]\n"
 )
 
 

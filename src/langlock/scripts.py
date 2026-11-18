@@ -13,14 +13,22 @@ COMMON = "Common"
 
 _RAW: dict[str, tuple[tuple[int, int], ...]] = {
     "Han": (
+        # Aligned with Unicode Scripts.txt (Scripts-18.0.0, 2026-06-29), Script=Han.
+        # Reserved gaps inside blocks are kept in range on purpose.
         (0x2E80, 0x2FDF),  # CJK radicals, Kangxi radicals
+        (0x3005, 0x3005),  # Ideographic iteration mark
+        (0x3007, 0x3007),  # Ideographic number zero
+        (0x3021, 0x3029),  # Hangzhou numerals 1-9
+        (0x3038, 0x303B),  # Hangzhou numerals 10-30, vertical iteration mark
         (0x3400, 0x4DBF),  # Extension A
         (0x4E00, 0x9FFF),  # Unified ideographs
         (0xF900, 0xFAFF),  # Compatibility ideographs
+        (0x16FE2, 0x16FE3),  # Old Chinese hook / iteration marks
+        (0x16FF0, 0x16FF6),  # Vietnamese reading marks, small ER, yangqin signs
         (0x20000, 0x2A6DF),  # Extension B
-        (0x2A700, 0x2EBEF),  # Extensions C-F
+        (0x2A700, 0x2EE5D),  # Extensions C-F, I
         (0x2F800, 0x2FA1F),  # Compatibility supplement
-        (0x30000, 0x323AF),  # Extensions G-H
+        (0x30000, 0x33479),  # Extensions G-H, J
     ),
     "Hangul": (
         (0x1100, 0x11FF),
